@@ -1,5 +1,20 @@
 # temporal-demo-project project
 
+Practice and demo project about Temporal.io.
+
+---
+
+## Temporal.io
+
+Reference:
+* [Temporal.io Java documents](https://docs.temporal.io/docs/java)
+* [tmeporalio/docker-compose](https://github.com/temporalio/docker-compose)
+* [tsurdilo/temporal-patient-onboarding](https://github.com/tsurdilo/temporal-patient-onboarding)
+
+---
+
+## Quarkus
+
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
