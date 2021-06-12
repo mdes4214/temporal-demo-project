@@ -1,69 +1,38 @@
-# temporal-demo-project project
+# Temporal Demo Project for Practice
 
 Practice and demo project about Temporal.io.
 
----
-
 ## Temporal.io
 
-Reference:
+References:
 * [Temporal.io Java documents](https://docs.temporal.io/docs/java)
 * [tmeporalio/docker-compose](https://github.com/temporalio/docker-compose)
 * [tsurdilo/temporal-patient-onboarding](https://github.com/tsurdilo/temporal-patient-onboarding)
 
----
+## Run the Demo
 
-## Quarkus
+1. Start the Temporal Service (docker compose):
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
-
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
-
-## Running the application in dev mode
-
-You can run your application in dev mode that enables live coding using:
 ```shell script
-./mvnw compile quarkus:dev
+ git clone https://github.com/temporalio/docker-compose.git
+ cd  docker-compose
+ docker-compose up
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
+2. Start the Demo Project:
 
-## Packaging and running the application
-
-The application can be packaged using:
 ```shell script
-./mvnw package
-```
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-If you want to build an _über-jar_, execute the following command:
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
+git clone https://github.com/mdes4214/temporal-demo-project.git
+cd temporal-demo-project
+mvn clean install quarkus:dev
 ```
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+3. Access the Swagger UI via: [http://localhost:8080/q/swagger-ui/](http://localhost:8080/q/swagger-ui/)
 
-## Creating a native executable
+4. Workflow and Trigger Methods
 
-You can create a native executable using: 
-```shell script
-./mvnw package -Pnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
-```shell script
-./mvnw package -Pnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/temporal-demo-project-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.html.
-
-## Provided examples
-
-### RESTEasy JAX-RS example
-
-REST is easy peasy with this Hello World RESTEasy resource.
-
-[Related guide section...](https://quarkus.io/guides/getting-started#the-jax-rs-resources)
+    1. Trigger the processing and send an order (`POST` `/processingOrder`)
+    2. Wait for picking goods
+    3. Approve the order (`POST` `/processingOrder/approve`)
+    4. Wait for shipping the order
+    5. Order processing finished
