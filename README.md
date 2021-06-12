@@ -31,8 +31,8 @@ mvn clean install quarkus:dev
 
 4. Workflow and Trigger Methods
 
-    1. Trigger the processing and send an order (`POST` `/processingOrder`)
+    1. Trigger the processing and send an order (`POST` `http://localhost:8080/processingOrder`)
     2. Wait for picking goods
-    3. Approve the order (`POST` `/processingOrder/approve`)
+    3. Approve the order (`POST` `http://localhost:8080/processingOrder/approve`)
     4. Wait for shipping the order
     5. Order processing finished
