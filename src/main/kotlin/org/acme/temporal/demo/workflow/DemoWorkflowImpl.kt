@@ -1,13 +1,15 @@
 package org.acme.temporal.demo.workflow
 
 import io.temporal.workflow.Saga
+import io.temporal.workflow.Workflow
 import org.acme.temporal.demo.model.Order
+import org.acme.temporal.demo.model.OrderStatus
 import org.acme.temporal.demo.utils.ActivityStubUtils
-import org.jboss.logging.Logger
+import org.slf4j.LoggerFactory
 import java.util.*
 
 class DemoWorkflowImpl : DemoWorkflow {
-    private val logger = Logger.getLogger(DemoWorkflowImpl::class.java)
+    private val logger = LoggerFactory.getLogger(DemoWorkflowImpl::class.java)
 
     private val demoActivityExecutor = ActivityStubUtils.getActivitiesStubWithTimeoutAndRetries(1, 3, 5)
     private val saga = Saga(Saga.Options.Builder().setParallelCompensation(false).build())
@@ -17,6 +19,7 @@ class DemoWorkflowImpl : DemoWorkflow {
 
     override fun processOrder(order: Order): Order {
         processingOrder = order
+        processingOrder.status = OrderStatus.Processing
 
         saga.addCompensation {
             status = "Compensating Processing for the order: $processingOrder"
@@ -24,18 +27,24 @@ class DemoWorkflowImpl : DemoWorkflow {
         }
 
         try {
+            logger.info("Start processing the order $order...")
+
             // 1. pick the goods in the order
             status = "Picking the goods in the order: $processingOrder"
             processingOrder.goods = demoActivityExecutor.pickGoods(processingOrder.goodsId)
 
             // 2. check the order if is valid
-            status = "Validating the order: $processingOrder"
-            processingOrder = demoActivityExecutor.checkOrder(processingOrder)
+            status = "Checking the order: $processingOrder"
+            logger.info("Start checking the order $processingOrder...")
+            Workflow.await { processingOrder.isCheck }
+            logger.info("Checked order by ${processingOrder.checkEmpl} at ${processingOrder.checkDate}")
 
-            // 3. ship the order to customer
+            // 3. ship the order to customerch
             status = "Shipping the order to customer: $processingOrder"
-            demoActivityExecutor.shipOrder(processingOrder)
+            processingOrder.shipDate = demoActivityExecutor.shipOrder(processingOrder)
+            processingOrder.status = OrderStatus.Shipped
 
+            logger.info("Processed order: $order")
         } catch (e: Exception) {
             logger.error("Processing Order failed, ", e)
             saga.compensate()
@@ -49,9 +58,5 @@ class DemoWorkflowImpl : DemoWorkflow {
         processingOrder.isCheck = true
         processingOrder.checkEmpl = approver
         processingOrder.checkDate = Date()
-    }
-
-    override fun exit() {
-        TODO("Not yet implemented")
     }
 }

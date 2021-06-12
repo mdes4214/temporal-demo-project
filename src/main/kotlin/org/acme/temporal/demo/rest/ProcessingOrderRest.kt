@@ -4,7 +4,7 @@ import io.temporal.client.WorkflowOptions
 import org.acme.temporal.demo.WorkflowApplicationObserver
 import org.acme.temporal.demo.model.Order
 import org.acme.temporal.demo.workflow.DemoWorkflow
-import org.apache.log4j.Logger
+import org.slf4j.LoggerFactory
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import javax.enterprise.context.ApplicationScoped
@@ -18,7 +18,7 @@ import javax.ws.rs.QueryParam
 @Path("/processingOrder")
 @Tag(name = "Order Processing Endpoint")
 class ProcessingOrderRest {
-    private val logger = Logger.getLogger(ProcessingOrderRest::class.java)
+    private val logger = LoggerFactory.getLogger(ProcessingOrderRest::class.java)
 
     @Inject
     lateinit var observer: WorkflowApplicationObserver
@@ -27,7 +27,8 @@ class ProcessingOrderRest {
     var taskQueue: String? = null
 
     @POST
-    fun doProcess(order: Order): Order {
+    fun doProcess(inOrder: Order?): Order {
+        val order = inOrder ?: Order()
         val workflow = observer.getClient().newWorkflowStub(
             DemoWorkflow::class.java,
             WorkflowOptions.newBuilder()
@@ -51,8 +52,10 @@ class ProcessingOrderRest {
 
     @POST
     @Path("/approve")
-    fun approve(@QueryParam("id") orderId: String,
-                @QueryParam("approver") approver: String): String {
+    fun approve(
+        @QueryParam("id") orderId: String,
+        @QueryParam("approver") approver: String
+    ): String {
         try {
             val workflow = observer.getClient().newWorkflowStub(DemoWorkflow::class.java, orderId)
             workflow.approve(approver)

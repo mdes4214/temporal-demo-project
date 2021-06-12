@@ -17,7 +17,4 @@ interface DemoWorkflow {
 
     @SignalMethod
     fun approve(approver: String)
-
-    @SignalMethod
-    fun exit()
 }

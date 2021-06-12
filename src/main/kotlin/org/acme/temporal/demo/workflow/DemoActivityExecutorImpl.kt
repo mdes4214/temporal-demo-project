@@ -2,21 +2,43 @@ package org.acme.temporal.demo.workflow
 
 import org.acme.temporal.demo.model.Goods
 import org.acme.temporal.demo.model.Order
+import org.acme.temporal.demo.model.OrderStatus
+import org.slf4j.LoggerFactory
+import java.util.*
 
 class DemoActivityExecutorImpl : DemoActivityExecutor {
+    private val logger = LoggerFactory.getLogger(DemoActivityExecutorImpl::class.java)
+
     override fun pickGoods(goodsId: String): Goods {
-        TODO("Not yet implemented")
+        // simulate picking the goods by goodsId...
+        logger.info("Start picking the goods by goodsId $goodsId...")
+        sleep(5)
+        val goods = Goods(goodsId = goodsId)
+        logger.info("Picked goods: $goods")
+        return goods
     }
 
-    override fun checkOrder(order: Order): Order {
-        TODO("Not yet implemented")
-    }
-
-    override fun shipOrder(order: Order) {
-        TODO("Not yet implemented")
+    override fun shipOrder(order: Order): Date {
+        // simulate shipping the order
+        logger.info("Start shipping the order $order...")
+        sleep(5)
+        val shipDate = Date()
+        logger.info("Shipped the order at $shipDate")
+        return shipDate
     }
 
     override fun compensateProcessing(order: Order): Order {
-        TODO("Not yet implemented")
+        order.status = OrderStatus.Rejected
+        // simulate rollbacking some works
+        logger.info("Start rollbacking and set order status to ${order.status}")
+        sleep(5)
+        logger.info("Rollbacked all works about the order $order")
+        return order
+    }
+
+    private fun sleep(seconds: Long) = try {
+        Thread.sleep(seconds * 1000)
+    } catch (e: InterruptedException) {
+        logger.error("Thread sleeping failed, ", e)
     }
 }
