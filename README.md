@@ -42,4 +42,4 @@ mvn clean install quarkus:dev
     2. Wait for picking goods
     3. Approve the order (`POST` `http://localhost:8080/processingOrder/approve`)
     4. Wait for shipping the order
-    5. Order processing finished
+    5. Order processing completed
