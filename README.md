@@ -10,6 +10,13 @@ References:
 * [tsurdilo/temporal-patient-onboarding](https://github.com/tsurdilo/temporal-patient-onboarding)
 * [Temporal Introduction and Demo (Youtube)](https://youtu.be/23rX78xqYUg)
 
+## Requirements
+
+1. Docker  
+    * [Windows Subsystem for Linux Installation Guide for Windows 10](https://docs.microsoft.com/zh-tw/windows/wsl/install-win10)
+    * [Get started with Docker remote containers on WSL 2](https://docs.microsoft.com/zh-tw/windows/wsl/tutorials/wsl-containers)
+3. Maven
+
 ## Run the Demo
 
 1. Start the Temporal Service (docker compose):
@@ -30,8 +37,7 @@ mvn clean install quarkus:dev
 
 3. Access the Swagger UI via: [http://localhost:8080/q/swagger-ui/](http://localhost:8080/q/swagger-ui/)
 
-4. Workflow and Trigger Methods
-
+4. Workflow and Trigger Methods  
     1. Trigger the processing and send an order (`POST` `http://localhost:8080/processingOrder`)
     2. Wait for picking goods
     3. Approve the order (`POST` `http://localhost:8080/processingOrder/approve`)
