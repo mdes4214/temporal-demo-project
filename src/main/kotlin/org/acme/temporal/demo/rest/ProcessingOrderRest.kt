@@ -6,6 +6,9 @@ import org.acme.temporal.demo.model.Order
 import org.acme.temporal.demo.workflow.DemoWorkflow
 import org.slf4j.LoggerFactory
 import org.eclipse.microprofile.config.inject.ConfigProperty
+import org.eclipse.microprofile.openapi.annotations.Operation
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -27,7 +30,8 @@ class ProcessingOrderRest {
     var taskQueue: String? = null
 
     @POST
-    fun doProcess(inOrder: Order?): Order {
+    @Operation(summary = "Send an order to process")
+    fun doProcess(@RequestBody(description = "the order data (if body is empty, will generate a default order)") inOrder: Order?): Order {
         val order = inOrder ?: Order()
         val workflow = observer.getClient().newWorkflowStub(
             DemoWorkflow::class.java,
@@ -40,7 +44,8 @@ class ProcessingOrderRest {
     }
 
     @GET
-    fun getStatus(@QueryParam("id") orderId: String): String {
+    @Operation(summary = "Get status of the order")
+    fun getStatus(@Parameter(description = "the workflow id (equals to the order id)") @QueryParam("id") orderId: String): String {
         try {
             val workflow = observer.getClient().newWorkflowStub(DemoWorkflow::class.java, orderId)
             return workflow.getStatus()
@@ -52,9 +57,10 @@ class ProcessingOrderRest {
 
     @POST
     @Path("/approve")
+    @Operation(summary = "Approve (check and sign) the order")
     fun approve(
-        @QueryParam("id") orderId: String,
-        @QueryParam("approver") approver: String
+        @Parameter(description = "the workflow id (equals to the order id)") @QueryParam("id") orderId: String,
+        @Parameter(description = "the approver to check order and sign") @QueryParam("approver") approver: String
     ): String {
         try {
             val workflow = observer.getClient().newWorkflowStub(DemoWorkflow::class.java, orderId)
