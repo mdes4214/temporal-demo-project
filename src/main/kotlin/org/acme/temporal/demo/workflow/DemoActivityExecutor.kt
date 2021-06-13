@@ -8,6 +8,6 @@ import java.util.*
 @ActivityInterface
 interface DemoActivityExecutor {
     fun pickGoods(goodsId: String): Goods
-    fun shipOrder(order: Order): Date
+    fun shipOrder(order: Order, isException: Boolean): Date
     fun compensateProcessing(order: Order): Order
 }

@@ -18,9 +18,16 @@ class DemoActivityExecutorImpl : DemoActivityExecutor {
         return goods
     }
 
-    override fun shipOrder(order: Order): Date {
+    override fun shipOrder(order: Order, isException: Boolean): Date {
         // simulate shipping the order
         logger.info("Start shipping the order $order...")
+
+        if (isException) {
+            // simulate exception happened
+            logger.error("Some errors happened during order shipping!!")
+            throw Exception("Simulate exception happened during order shipping")
+        }
+
         sleep(5)
         val shipDate = Date()
         logger.info("Shipped the order at $shipDate")

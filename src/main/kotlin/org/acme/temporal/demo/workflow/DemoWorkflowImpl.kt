@@ -5,6 +5,7 @@ import io.temporal.workflow.Workflow
 import org.acme.temporal.demo.model.Order
 import org.acme.temporal.demo.model.OrderStatus
 import org.acme.temporal.demo.utils.ActivityStubUtils
+import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -14,8 +15,10 @@ class DemoWorkflowImpl : DemoWorkflow {
     private val demoActivityExecutor = ActivityStubUtils.getActivitiesStubWithTimeoutAndRetries(1, 3, 5)
     private val saga = Saga(Saga.Options.Builder().setParallelCompensation(false).build())
 
-    private var status: String = ""
-    private var processingOrder: Order = Order()
+    private var status = ""
+    private var processingOrder = Order()
+
+    private var isException = false
 
     override fun processOrder(order: Order): Order {
         processingOrder = order
@@ -41,7 +44,7 @@ class DemoWorkflowImpl : DemoWorkflow {
 
             // 3. ship the order to customerch
             status = "Shipping the order to customer: $processingOrder"
-            processingOrder.shipDate = demoActivityExecutor.shipOrder(processingOrder)
+            processingOrder.shipDate = demoActivityExecutor.shipOrder(processingOrder, isException)
             processingOrder.status = OrderStatus.Shipped
 
             logger.info("Processed order: $order")
@@ -58,5 +61,10 @@ class DemoWorkflowImpl : DemoWorkflow {
         processingOrder.isCheck = true
         processingOrder.checkEmpl = approver
         processingOrder.checkDate = Date()
+    }
+
+    override fun simulateException(isException: Boolean) {
+        this.isException = isException
+        logger.info("Set isException=$isException for simulating exception")
     }
 }

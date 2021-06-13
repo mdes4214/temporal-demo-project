@@ -31,7 +31,9 @@ class ProcessingOrderRest {
 
     @POST
     @Operation(summary = "Send an order to process")
-    fun doProcess(@RequestBody(description = "the order data (if body is empty, will generate a default order)") inOrder: Order?): Order {
+    fun doProcess(
+        @RequestBody(description = "the order data (if body is empty, will generate a default order)") inOrder: Order?
+    ): Order {
         val order = inOrder ?: Order()
         val workflow = observer.getClient().newWorkflowStub(
             DemoWorkflow::class.java,
@@ -45,7 +47,9 @@ class ProcessingOrderRest {
 
     @GET
     @Operation(summary = "Get status of the order")
-    fun getStatus(@Parameter(description = "the workflow id (equals to the order id)") @QueryParam("id") orderId: String): String {
+    fun getStatus(
+        @Parameter(description = "the workflow id (equals to the order id)") @QueryParam("id") orderId: String
+    ): String {
         try {
             val workflow = observer.getClient().newWorkflowStub(DemoWorkflow::class.java, orderId)
             return workflow.getStatus()
@@ -69,6 +73,23 @@ class ProcessingOrderRest {
         } catch (e: Exception) {
             logger.error("Unable to signal workflow with id: $orderId, and approver: $approver", e)
             return "Unable to signal workflow with id: $orderId, and approver: $approver"
+        }
+    }
+
+    @POST
+    @Path("/simulateException")
+    @Operation(summary = "Simulate exception happened for retring and compensating")
+    fun simulateException(
+        @Parameter(description = "the workflow id (equals to the order id)") @QueryParam("id") orderId: String,
+        @Parameter(description = "simulate exception happened") @QueryParam("isException") isException: Boolean
+    ): String {
+        try {
+            val workflow = observer.getClient().newWorkflowStub(DemoWorkflow::class.java, orderId)
+            workflow.simulateException(isException)
+            return workflow.getStatus()
+        } catch (e: Exception) {
+            logger.error("Unable to simulate exception in workflow with id: $orderId, and isException: $isException", e)
+            return "Unable to simulate exception in workflow with id: $orderId, and isException: $isException"
         }
     }
 }

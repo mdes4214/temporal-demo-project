@@ -17,4 +17,7 @@ interface DemoWorkflow {
 
     @SignalMethod
     fun approve(approver: String)
+
+    @SignalMethod
+    fun simulateException(isException: Boolean)
 }
