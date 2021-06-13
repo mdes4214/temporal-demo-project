@@ -8,7 +8,7 @@ References:
 * [Temporal.io Java documents](https://docs.temporal.io/docs/java)
 * [temporalio/docker-compose](https://github.com/temporalio/docker-compose)
 * [tsurdilo/temporal-patient-onboarding](https://github.com/tsurdilo/temporal-patient-onboarding)
-* [Temporal Introduction and Demo (Youtube)](https://youtu.be/23rX78xqYUg)
+* [Temporal Introduction and Demo (YouTube)](https://youtu.be/23rX78xqYUg)
 
 ## Requirements
 
