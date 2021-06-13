@@ -6,7 +6,7 @@ Practice and demo project about Temporal.io.
 
 References:
 * [Temporal.io Java documents](https://docs.temporal.io/docs/java)
-* [tmeporalio/docker-compose](https://github.com/temporalio/docker-compose)
+* [temporalio/docker-compose](https://github.com/temporalio/docker-compose)
 * [tsurdilo/temporal-patient-onboarding](https://github.com/tsurdilo/temporal-patient-onboarding)
 * [Temporal Introduction and Demo (Youtube)](https://youtu.be/23rX78xqYUg)
 
