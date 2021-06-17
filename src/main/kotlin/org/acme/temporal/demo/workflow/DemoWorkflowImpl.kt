@@ -42,7 +42,7 @@ class DemoWorkflowImpl : DemoWorkflow {
             Workflow.await { processingOrder.isCheck }
             logger.info("Checked order by ${processingOrder.checkEmpl} at ${processingOrder.checkDate}")
 
-            // 3. ship the order to customerch
+            // 3. ship the order to customer
             status = "Shipping the order to customer: $processingOrder"
             processingOrder.shipDate = demoActivityExecutor.shipOrder(processingOrder, isException)
             processingOrder.status = OrderStatus.Shipped
