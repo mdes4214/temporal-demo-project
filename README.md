@@ -10,6 +10,7 @@ References:
 * [temporalio/docker-compose](https://github.com/temporalio/docker-compose)
 * [tsurdilo/temporal-patient-onboarding](https://github.com/tsurdilo/temporal-patient-onboarding)
 * [Temporal Introduction and Demo (YouTube)](https://youtu.be/23rX78xqYUg)
+* [Temporal-sdk in Javadoc.io](https://www.javadoc.io/doc/io.temporal/temporal-sdk/latest/index.html)
 
 ## Requirements
 
@@ -45,3 +46,14 @@ mvn clean install quarkus:dev
     3. Approve the order (`POST` `http://localhost:8080/processingOrder/approve`)
     4. Wait for shipping the order
     5. Order processing completed
+
+## Note
+### Workflow and Activities are registered to a Worker instead of directly saving in the Temporal server.
+> Reference: [https://docs.temporal.io/docs/server-architecture](https://docs.temporal.io/docs/server-architecture)
+
+![Temporal Architecture](https://docs.temporal.io/assets/images/temporal-high-level-abstracted-relationships-cefbdc8dec2539f22c8a7d8e4e08d6b9.png)
+
+### How Temporal get HA (High Availability)?
+### Scalibility of Temporal
+### When the Workflow has a new version, how to update the code to keep both running old Workflow and new version?
+### Side Effect in Activity
