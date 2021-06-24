@@ -51,7 +51,7 @@ mvn clean install quarkus:dev
 ## Note
 ### Table of Contents
 1. [Workflow and Activities are registered to a Worker instead of directly saving in the Temporal server.](#worker)
-2. [How Temporal get HA (High Availability)?](#HA)
+2. [How does Temporal get HA (High Availability)?](#HA)
 3. [Scalibility of Temporal](#scalibility)
 4. [When the Workflow has a new version, how to update the code to keep both running old Workflow and new version?](#version)
 5. [Side Effect in Workflow](#sideEffect)
@@ -62,7 +62,7 @@ mvn clean install quarkus:dev
 
 ![Temporal Architecture](https://docs.temporal.io/assets/images/temporal-high-level-abstracted-relationships-cefbdc8dec2539f22c8a7d8e4e08d6b9.png)
 
-### 2. How Temporal get HA (High Availability)? <a name="HA"></a>
+### 2. How does Temporal get HA (High Availability)? <a name="HA"></a>
 
 > Reference: 
 > * [https://docs.temporal.io/docs/server/namespaces](https://docs.temporal.io/docs/server/namespaces)
