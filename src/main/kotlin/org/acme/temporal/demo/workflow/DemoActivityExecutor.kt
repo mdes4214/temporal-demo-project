@@ -10,4 +10,6 @@ interface DemoActivityExecutor {
     fun pickGoods(goodsId: String): Goods
     fun shipOrder(order: Order, isException: Boolean): Date
     fun compensateProcessing(order: Order): Order
+
+    fun validApprover(order: Order): Boolean
 }

@@ -3,6 +3,7 @@ package org.acme.temporal.demo.workflow
 import org.acme.temporal.demo.model.Goods
 import org.acme.temporal.demo.model.Order
 import org.acme.temporal.demo.model.OrderStatus
+import org.apache.maven.shared.utils.StringUtils
 import org.slf4j.LoggerFactory
 import java.util.*
 
@@ -41,6 +42,12 @@ class DemoActivityExecutorImpl : DemoActivityExecutor {
         sleep(5)
         logger.info("Rollbacked all works about the order $order")
         return order
+    }
+
+    override fun validApprover(order: Order): Boolean {
+        logger.info("Start validating approver [${order.checkEmpl}]")
+        sleep(5)
+        return StringUtils.equals("Andrew", order.checkEmpl)
     }
 
     private fun sleep(seconds: Long) = try {
