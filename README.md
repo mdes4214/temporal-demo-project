@@ -302,7 +302,7 @@ We need to add `Workflow.getVersion()` even though the workflow doesn't have any
 ```kotlin
 // workflow implement
 override fun processOrder(order: Order): Order {
-   // we need to add this at the begining of the whole workflow
+   // we need to add this at the beginning of the whole workflow
    val versionWorkflow = Workflow.getVersion("workflowChange", Workflow.DEFAULT_VERSION, Workflow.DEFAULT_VERSION) 
 
    logger.info("Start processing the order $order... [$versionWorkflow]") 
