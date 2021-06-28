@@ -227,6 +227,8 @@ So if we need to start a workflow, we:
 
 ### 4. When the Workflow has a new version, how to update the code to keep both running old Workflow and new version? <a name="version"></a>
 
+#### 4-1. Versioning
+
 > Reference: 
 > * [https://docs.temporal.io/docs/java/versioning](https://docs.temporal.io/docs/java/versioning)
 > * [https://www.javadoc.io/doc/io.temporal/temporal-sdk/latest/io/temporal/workflow/Workflow.html](https://www.javadoc.io/doc/io.temporal/temporal-sdk/latest/io/temporal/workflow/Workflow.html)
@@ -283,6 +285,56 @@ It is recommended to keep the GetVersion() call even if single branch is left:
 ``` java
  Workflow.getVersion("fooChange", 2, 2);
  result = testActivities.activity3();
+```
+
+#### 4-2. How to make executed and ongoing workflows won't hit the new code, but all new workflow will hit?
+
+> Reference: 
+> * [https://community.temporal.io/t/potential-impact-of-workflow-update/1760](https://community.temporal.io/t/potential-impact-of-workflow-update/1760)
+
+**Condition:** We have a workflow version `V0` and an executed and ongoing task `R0`. Due to the business logic adjustment, we need to modify the last activity of the workflow. This make a new workflow version `V1`. Now, though `R0` hasn't arrived the last activity, we still expect that `R0` will complete the `V0` workflow instead of `V1`. And we also expect that all the new tasks (`R1`, `R2`, ...) will choose the codepath `V1`.
+
+> Note that if simply use `4-1` versioning method, because the adjusted activity stage will be executed by `R0` ***first time*** (first time call the `Workflow.getVersion()`) after the workflow updated from `V0` to `V1`, the `R0` will choose `V1` codepath instead of continueing `V0`.
+
+**Solution:** We should add a `Workflow.getVersion()` at the beginning  of the whole workflow, to make sure every task will get a version before running the activities. This is like a workaround  because that in one task, the same changeId will always return the same version, and this can let the `R0` choose `V0` in the adjusted activity stage.
+
+We need to add `Workflow.getVersion()` even though the workflow doesn't have any change.
+```kotlin
+// workflow implement
+override fun processOrder(order: Order): Order {
+   // we need to add this at the begining of the whole workflow
+   val versionWorkflow = Workflow.getVersion("workflowChange", Workflow.DEFAULT_VERSION, Workflow.DEFAULT_VERSION) 
+
+   logger.info("Start processing the order $order... [$versionWorkflow]") 
+   // versionWorkflow = -1
+
+   ... // some activities
+
+}
+```
+After updating the last activity, we will update the workflow version number. **And all the change will use the changeId same as the beginning of workflow.**
+```kotlin
+// workflow implement
+override fun processOrder(order: Order): Order {
+   val versionWorkflow = Workflow.getVersion("workflowChange", Workflow.DEFAULT_VERSION, 1)
+
+   logger.info("Start processing the order $order... [$versionWorkflow]") 
+   // in R0: versionWorkflow = -1
+   // in R1: versionWorkflow = 1
+
+   ... // some activities
+
+   // the activity stage which need to be updated
+   val versionUpdate = Workflow.getVersion("workflowChange", Workflow.DEFAULT_VERSION, 1)
+   // in R0: versionUpdate = -1
+   // in R1: versionUpdate = 1
+   // due to the same changeId = "workflowChange", versionUpdate always be same as versionWorkflow
+   
+   if (versionUpdate != Workflow.DEFAULT_VERSION) {
+       logger.info("choose the new codepath only if the workflow is running after version updated")
+       // new codepath TODO
+   }
+}
 ```
 
 ### 5. Side Effect in Workflow <a name="sideEffect"></a>
