@@ -13,7 +13,7 @@ class DemoActivityExecutorImpl : DemoActivityExecutor {
     override fun pickGoods(goodsId: String): Goods {
         // simulate picking the goods by goodsId...
         logger.info("Start picking the goods by goodsId $goodsId...")
-        sleep(5)
+        sleep(60)
         val goods = Goods(goodsId = goodsId)
         logger.info("Picked goods: $goods")
         return goods

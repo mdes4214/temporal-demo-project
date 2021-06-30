@@ -7,6 +7,8 @@ import io.temporal.serviceclient.WorkflowServiceStubs
 import io.temporal.worker.WorkerFactory
 import org.acme.temporal.demo.workflow.DemoActivityExecutorImpl
 import org.acme.temporal.demo.workflow.DemoWorkflowImpl
+import org.acme.temporal.demo.workflow.DemoWorkflowImplV1
+import org.acme.temporal.demo.workflow.DemoWorkflowImplV2
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import javax.enterprise.context.ApplicationScoped
 import javax.enterprise.event.Observes
@@ -25,7 +27,9 @@ class WorkflowApplicationObserver {
         factory = WorkerFactory.newInstance(client)
 
         val worker = factory.newWorker(taskQueue)
-        worker.registerWorkflowImplementationTypes(DemoWorkflowImpl::class.java)
+//        worker.registerWorkflowImplementationTypes(DemoWorkflowImpl::class.java)
+        worker.registerWorkflowImplementationTypes(DemoWorkflowImplV1::class.java)
+//        worker.registerWorkflowImplementationTypes(DemoWorkflowImplV2::class.java)
         worker.registerActivitiesImplementations(DemoActivityExecutorImpl())
 
         factory.start()
