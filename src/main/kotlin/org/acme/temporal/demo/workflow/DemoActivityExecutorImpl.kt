@@ -1,5 +1,6 @@
 package org.acme.temporal.demo.workflow
 
+import io.temporal.workflow.Workflow
 import org.acme.temporal.demo.model.Goods
 import org.acme.temporal.demo.model.Order
 import org.acme.temporal.demo.model.OrderStatus
@@ -13,7 +14,10 @@ class DemoActivityExecutorImpl : DemoActivityExecutor {
     override fun pickGoods(goodsId: String): Goods {
         // simulate picking the goods by goodsId...
         logger.info("Start picking the goods by goodsId $goodsId...")
-        sleep(60)
+        while (true) {
+
+        }
+        sleep(30)
         val goods = Goods(goodsId = goodsId)
         logger.info("Picked goods: $goods")
         return goods

@@ -27,8 +27,8 @@ class WorkflowApplicationObserver {
         factory = WorkerFactory.newInstance(client)
 
         val worker = factory.newWorker(taskQueue)
-//        worker.registerWorkflowImplementationTypes(DemoWorkflowImpl::class.java)
-        worker.registerWorkflowImplementationTypes(DemoWorkflowImplV1::class.java)
+        worker.registerWorkflowImplementationTypes(DemoWorkflowImpl::class.java)
+//        worker.registerWorkflowImplementationTypes(DemoWorkflowImplV1::class.java)
 //        worker.registerWorkflowImplementationTypes(DemoWorkflowImplV2::class.java)
         worker.registerActivitiesImplementations(DemoActivityExecutorImpl())
 

@@ -1,5 +1,6 @@
 package org.acme.temporal.demo.workflow
 
+import io.temporal.workflow.CancellationScope
 import io.temporal.workflow.Saga
 import io.temporal.workflow.Workflow
 import org.acme.temporal.demo.model.Order
@@ -16,6 +17,7 @@ class DemoWorkflowImpl : DemoWorkflow {
 
     private var status = ""
     private var processingOrder = Order()
+    private var cancellationScope: CancellationScope? = null
 
     private var isException = false
 
@@ -28,7 +30,8 @@ class DemoWorkflowImpl : DemoWorkflow {
             this.processingOrder = demoActivityExecutor.compensateProcessing(this.processingOrder)
         }
 
-        try {
+
+        cancellationScope = Workflow.newCancellationScope(Runnable {
             val versionWorkflow = Workflow.getVersion("workflowChange", Workflow.DEFAULT_VERSION, 1)
 
             logger.info("Start processing the order $order... [$versionWorkflow]")
@@ -43,19 +46,19 @@ class DemoWorkflowImpl : DemoWorkflow {
             }
 
             // 2. check the order if is valid
-            status = "Checking the order: $processingOrder"
-            logger.info("Start checking the order $processingOrder...")
-            Workflow.await { processingOrder.isCheck }
-            Workflow.getVersion("test", Workflow.DEFAULT_VERSION, 1)
-            logger.info("Checked order by ${processingOrder.checkEmpl} at ${processingOrder.checkDate}")
-
-            val versionApprover = Workflow.getVersion("workflowChange", Workflow.DEFAULT_VERSION, 1)
-            if (versionApprover != Workflow.DEFAULT_VERSION) {
-              val isApproverValid = demoActivityExecutor.validApprover(order)
-              if (!isApproverValid) {
-                  throw Exception("Invalid approver [${order.checkEmpl}]")
-              }
-            }
+//            status = "Checking the order: $processingOrder"
+//            logger.info("Start checking the order $processingOrder...")
+//            Workflow.await { processingOrder.isCheck }
+//            Workflow.getVersion("test", Workflow.DEFAULT_VERSION, 1)
+//            logger.info("Checked order by ${processingOrder.checkEmpl} at ${processingOrder.checkDate}")
+//
+//            val versionApprover = Workflow.getVersion("workflowChange", Workflow.DEFAULT_VERSION, 1)
+//            if (versionApprover != Workflow.DEFAULT_VERSION) {
+//              val isApproverValid = demoActivityExecutor.validApprover(order)
+//              if (!isApproverValid) {
+//                  throw Exception("Invalid approver [${order.checkEmpl}]")
+//              }
+//            }
 
             // 3. ship the order to customer
             status = "Shipping the order to customer: $processingOrder"
@@ -63,6 +66,10 @@ class DemoWorkflowImpl : DemoWorkflow {
             processingOrder.status = OrderStatus.Shipped
 
             logger.info("Processed order: $order")
+        })
+
+        try {
+            cancellationScope!!.run()
         } catch (e: Exception) {
             logger.error("Processing Order failed, ", e)
             saga.compensate()
@@ -73,9 +80,12 @@ class DemoWorkflowImpl : DemoWorkflow {
     override fun getStatus(): String = status
 
     override fun approve(approver: String) {
-        processingOrder.isCheck = true
-        processingOrder.checkEmpl = approver
-        processingOrder.checkDate = Date()
+        // Cancel the workflow by external Signal
+        cancellationScope!!.cancel()
+
+//        processingOrder.isCheck = true
+//        processingOrder.checkEmpl = approver
+//        processingOrder.checkDate = Date()
     }
 
     override fun simulateException(isException: Boolean) {
