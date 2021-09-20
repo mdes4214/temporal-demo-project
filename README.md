@@ -43,7 +43,7 @@ mvn clean install quarkus:dev
 4. Workflow and Trigger Methods  
     1. Trigger the processing and send an order (`POST` `http://localhost:8080/processingOrder`)
     2. Wait for picking goods  
-        * if want to simulate exception happended for retry and compensation testing, set `isException=true` (`POST` `http://localhost:8080/processingOrder/simulateException`)
+        * if want to simulate exception happened for retry and compensation testing, set `isException=true` (`POST` `http://localhost:8080/processingOrder/simulateException`)
     3. Approve the order (`POST` `http://localhost:8080/processingOrder/approve`)
     4. Wait for shipping the order
     5. Order processing completed
@@ -52,15 +52,17 @@ mvn clean install quarkus:dev
 ### Table of Contents
 1. [Workflow and Activities are registered to a Worker instead of directly saving in the Temporal server.](#worker)
 2. [How does Temporal get HA (High Availability)?](#HA)
-3. [Scalibility of Temporal](#scalibility)
+3. [Scalability of Temporal](#scalability)
 4. [When the Workflow has a new version, how to update the code to keep both running old Workflow and new version?](#version)
 5. [Side Effect in Workflow](#sideEffect)
 
 ### 1. Workflow and Activities are registered to a Worker instead of directly saving in the Temporal server. <a name="worker"></a>
 
-> Reference: [https://docs.temporal.io/docs/server-architecture](https://docs.temporal.io/docs/server-architecture)
+> Reference: 
+> * [https://docs.temporal.io/docs/concepts/workers](https://docs.temporal.io/docs/concepts/workers)
+> * [https://docs.temporal.io/docs/content/what-is-a-temporal-cluster](https://docs.temporal.io/docs/content/what-is-a-temporal-cluster)
 
-![Temporal Architecture](https://docs.temporal.io/assets/images/temporal-high-level-abstracted-relationships-cefbdc8dec2539f22c8a7d8e4e08d6b9.png)
+![Temporal Architecture](img/temporal_architecture.png)
 
 ### 2. How does Temporal get HA (High Availability)? <a name="HA"></a>
 
@@ -184,7 +186,7 @@ Temporal will reject the call and return `NamespaceNotActiveError`. It is the re
 
 The recommendation at this point is to ***publish events to a Kafka topic*** if they can be generated in any cluster. Then, have a consumer that consumes from the aggregated Kafka topic in the same cluster and sends them to Temporal. Both the Kafka consumer and Global Namespace need to be failed over together.
 
-### 3. Scalibility of Temporal <a name="scalibility"></a>
+### 3. Scalability of Temporal <a name="scalability"></a>
 
 > Reference: [https://docs.temporal.io/blog/workflow-engine-principles/](https://docs.temporal.io/blog/workflow-engine-principles/)
 > 
@@ -204,7 +206,7 @@ Once we can assume each instance has a limited size, we can start ***distributin
 
 If you want to have a very, very large system, you need to scale out the database as well. A single database instance will be a bottleneck.
 
-![Sharding](https://user-images.githubusercontent.com/6764957/113587251-16983500-9661-11eb-8b7d-edf47b3fb283.png)
+![Sharding](img/scalability_1.png)
 
 * #### The Task Queue Problem
 
@@ -214,7 +216,7 @@ If moving the queue into its a separate component with its own persistence, the 
 
 The way we solved it in Temporal is using ***Transfer Queues***. The idea is that ***every shard which stores workflow state also stores a queue***. 10,000 shards, 10,000 queues. Every time we make an update to a shard we can also make an update to the queue because it lives in the same partition.
 
-![Transfer Queue](https://user-images.githubusercontent.com/6764957/113587393-4e9f7800-9661-11eb-961b-119524b420c6.png)
+![Transfer Queue](img/scalability_2.png)
 
 So if we need to start a workflow, we:
 1. create a state for that workflow
@@ -223,7 +225,7 @@ So if we need to start a workflow, we:
 4. This will be committed to the database atomically
 5. a thread pulls from that queue and transfers that message to the queuing subsystem.
 
-![Transfer Queue add task](https://user-images.githubusercontent.com/6764957/113587447-5e1ec100-9661-11eb-8c7a-19064279d07e.png)
+![Transfer Queue add task](img/scalability_3.png)
 
 ### 4. When the Workflow has a new version, how to update the code to keep both running old Workflow and new version? <a name="version"></a>
 
@@ -312,7 +314,7 @@ override fun processOrder(order: Order): Order {
 
 }
 ```
-After updating the last activity, we will update the workflow version number. **And all the change will use the changeId same as the beginning of workflow.**
+After updating the last activity, we will update the workflow version number. **And all the changes will use the changeId same as the beginning of workflow.**
 ```kotlin
 // workflow implement
 override fun processOrder(order: Order): Order {
